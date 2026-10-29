@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE us-patent-grant SYSTEM "us-patent-grant-v45-2014-04-03.dtd" [ ]>
+<us-patent-grant lang="EN" dtd-version="v4.5 2014-04-03" file="US09999991-20200107.XML" status="PRODUCTION" id="us-patent-grant" country="US" date-produced="20191220" date-publ="20200107">
+<us-bibliographic-data-grant>
+<publication-reference>
+<document-id>
+<country>US</country>
+<doc-number>09999991</doc-number>
+<kind>B2</kind>
+<date>20200107</date>
+</document-id>
+</publication-reference>
+<application-reference appl-type="utility">
+<document-id>
+<country>US</country>
+<doc-number>15000001</doc-number>
+<date>20180102</date>
+</document-id>
+</application-reference>
+<invention-title id="d2e43">Synthetic widget for a parser smoke test</invention-title>
+<us-parties>
+<inventors>
+<inventor sequence="001" designation="us-only">
+<addressbook>
+<last-name>Doe</last-name>
+<first-name>Jane</first-name>
+<address>
+<city>Alexandria</city>
+<state>VA</state>
+<country>US</country>
+</address>
+</addressbook>
+</inventor>
+</inventors>
+</us-parties>
+</us-bibliographic-data-grant>
+<abstract id="abstract">
+<p id="p-0001" num="0000">A synthetic widget that has a <b>first</b> part and a second part.</p>
+</abstract>
+<claims id="claims">
+<claim id="CLM-00001" num="00001">
+<claim-text>1. A widget comprising a first part and a second part.</claim-text>
+</claim>
+<claim id="CLM-00002" num="00002">
+<claim-text>2. The widget of claim 1, wherein the first part is round.</claim-text>
+</claim>
+</claims>
+</us-patent-grant>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE us-patent-grant SYSTEM "us-patent-grant-v45-2014-04-03.dtd" [ ]>
+<us-patent-grant lang="EN" dtd-version="v4.5 2014-04-03" file="USD0999992-20200107.XML" status="PRODUCTION" id="us-patent-grant" country="US" date-produced="20191220" date-publ="20200107">
+<us-bibliographic-data-grant>
+<publication-reference>
+<document-id>
+<country>US</country>
+<doc-number>D0999992</doc-number>
+<kind>S1</kind>
+<date>20200107</date>
+</document-id>
+</publication-reference>
+<application-reference appl-type="design">
+<document-id>
+<country>US</country>
+<doc-number>29000002</doc-number>
+<date>20180103</date>
+</document-id>
+</application-reference>
+<invention-title id="d2e44">Synthetic ornamental design</invention-title>
+</us-bibliographic-data-grant>
+<claims id="claims">
+<claim id="CLM-00001" num="00001">
+<claim-text>The ornamental design for a widget, as shown and described.</claim-text>
+</claim>
+</claims>
+</us-patent-grant>
