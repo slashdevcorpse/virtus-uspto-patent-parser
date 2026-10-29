@@ -1,0 +1,81 @@
+# Release of the virtus fork (VIRTUS.md). A tag v<upstream version>+virtus.<n>
+# on the virtus branch builds the wheel and the sdist with uv, runs the smoke
+# test against the wheel and publishes both with one SHA256SUMS as the assets
+# of the GitHub release of the tag.
+name: virtus-release
+
+on:
+  push:
+    tags:
+      - 'v*\+virtus.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: jog-16vcpu
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: '0.13.1'
+          enable-cache: false
+
+      - name: Check the tag against the version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(uv version --short)"
+          test "v${version}" = "$TAG" || { echo "tag ${TAG} is not v${version} (pyproject.toml)"; exit 1; }
+
+      - name: Build
+        run: |
+          SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          export SOURCE_DATE_EPOCH
+          # Pin the build backend here, not in pyproject.toml, so source installs still resolve it freely.
+          echo 'hatchling==1.33.0' > "$RUNNER_TEMP/build-constraints.txt"
+          uv build --python 3.13.15 --build-constraint "$RUNNER_TEMP/build-constraints.txt" --out-dir dist
+
+      - name: Check the assets
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          wheel="dist/virtus_uspto_patent_parser-${version}-py3-none-any.whl"
+          sdist="dist/virtus_uspto_patent_parser-${version}.tar.gz"
+          test -f "$wheel" || { echo "no wheel for version ${version}"; ls dist; exit 1; }
+          test -f "$sdist" || { echo "no sdist for version ${version}"; ls dist; exit 1; }
+          # List the archive first, so a failed listing stops the step under bash -e.
+          wheel_files="$(unzip -Z1 "$wheel")"
+          # The wheel holds the upstream module `uspto` and package `parsers` only.
+          if grep -Ev '^(uspto\.py|parsers/[^/]+\.py|virtus_uspto_patent_parser-[^/]+\.dist-info/.+)$' <<< "$wheel_files"; then
+            echo "the wheel holds files outside uspto.py and parsers/"
+            exit 1
+          fi
+
+      - name: Smoke test the wheel
+        env:
+          TAG: ${{ github.ref_name }}
+        working-directory: tests
+        run: |
+          # importlib mode and the tests directory as cwd keep the source tree off sys.path,
+          # so the test imports the installed wheel.
+          uv run --isolated --no-project --python 3.13.15 \
+            --with "../dist/virtus_uspto_patent_parser-${TAG#v}-py3-none-any.whl" --with 'pytest==9.2.0' \
+            pytest -q --import-mode=importlib -p no:cacheprovider .
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd dist
+          sha256sum -- *.whl *.tar.gz > SHA256SUMS
+          cat SHA256SUMS
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "$TAG" --notes "Built from ${GITHUB_SHA}. See VIRTUS.md." \
+            -- *.whl *.tar.gz SHA256SUMS
