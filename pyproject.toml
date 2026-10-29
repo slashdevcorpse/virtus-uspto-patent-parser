@@ -1,0 +1,36 @@
+[project]
+name = "virtus-uspto-patent-parser"
+# Upstream has no version; see VIRTUS.md "Release".
+version = "0.0.0+virtus.1"
+description = "Read and parse USPTO patent grant full text (APS TXT, XML v2, XML v4). Virtus fork of TamerKhraisha/uspto-patent-data-parser."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+# Lower bounds only (decision D-122). Each floor installs from wheels on Python 3.9 and 3.13. No numpy release has
+# wheels for both, so its floor depends on the Python version. urllib3 is not imported directly: requests allows
+# urllib3 releases older than 1.26.5, which do not import on Python 3.12 and later.
+dependencies = [
+    "beautifulsoup4>=4.6.3",
+    "numpy>=1.22.4; python_version < '3.13'",
+    "numpy>=2.1.0; python_version >= '3.13'",
+    "pandas>=2.2.3",
+    "requests>=2.32.0",
+    "urllib3>=1.26.5",
+]
+
+[project.urls]
+Upstream = "https://github.com/TamerKhraisha/uspto-patent-data-parser"
+Source = "https://github.com/slashdevcorpse/virtus-uspto-patent-parser"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "uspto_patent_parser"
+module-root = ""
+source-include = ["tests/**"]
