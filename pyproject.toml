@@ -7,11 +7,14 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"
+# Lower bounds only (decision D-122). Each floor installs from wheels on Python 3.9 and 3.13. No numpy release has
+# wheels for both, so its floor depends on the Python version.
 dependencies = [
     "beautifulsoup4>=4.6.3",
-    "numpy",
-    "pandas",
-    "requests",
+    "numpy>=1.22.4; python_version < '3.13'",
+    "numpy>=2.1.0; python_version >= '3.13'",
+    "pandas>=2.2.3",
+    "requests>=2.32.0",
 ]
 
 [project.urls]

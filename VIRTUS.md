@@ -31,6 +31,8 @@ One line for each commit on `virtus` that is not in upstream:
 6. `Add an APS TXT fixture to the smoke test`: `tests/fixtures/aps_two_grants.txt` (two synthetic grants,
    hand-written).
 7. `Update VIRTUS.md for the uspto_patent_parser package`: this file.
+8. `Give every dependency a lower bound`: floors in `pyproject.toml` that install from wheels on Python 3.9 and
+   3.13 (decision D-122 Q3); the numpy floor depends on the Python version.
 
 Apart from the moves and the relative imports of patch 5, no patch changes the upstream code.
 
