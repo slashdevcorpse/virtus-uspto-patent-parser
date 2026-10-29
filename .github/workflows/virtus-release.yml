@@ -36,9 +36,7 @@ jobs:
         run: |
           SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
           export SOURCE_DATE_EPOCH
-          # Pin the build backend here, not in pyproject.toml, so source installs still resolve it freely.
-          echo 'hatchling==1.33.0' > "$RUNNER_TEMP/build-constraints.txt"
-          uv build --python 3.13.15 --build-constraint "$RUNNER_TEMP/build-constraints.txt" --out-dir dist
+          uv build --python 3.13.15 --out-dir dist
 
       - name: Check the assets
         env:
@@ -51,11 +49,13 @@ jobs:
           test -f "$sdist" || { echo "no sdist for version ${version}"; ls dist; exit 1; }
           # List the archive first, so a failed listing stops the step under bash -e.
           wheel_files="$(unzip -Z1 "$wheel")"
-          # The wheel holds the upstream module `uspto` and package `parsers` only.
-          if grep -Ev '^(uspto\.py|parsers/[^/]+\.py|virtus_uspto_patent_parser-[^/]+\.dist-info/.+)$' <<< "$wheel_files"; then
-            echo "the wheel holds files outside uspto.py and parsers/"
+          # The wheel holds the uspto_patent_parser package only, without the tests.
+          if grep -Ev '^(uspto_patent_parser/|virtus_uspto_patent_parser-[^/]+\.dist-info/)' <<< "$wheel_files"; then
+            echo "the wheel holds files outside the uspto_patent_parser package"
             exit 1
           fi
+          grep -qx 'uspto_patent_parser/parsers/parse_xml_v4_file.py' <<< "$wheel_files" \
+            || { echo "the wheel has no uspto_patent_parser/parsers/parse_xml_v4_file.py"; exit 1; }
 
       - name: Smoke test the wheel
         env:

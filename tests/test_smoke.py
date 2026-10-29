@@ -6,19 +6,19 @@ the other, each with its own XML declaration.
 
 from pathlib import Path
 
-import parsers.parse_xml_v4_file
-import uspto
+import uspto_patent_parser
+from uspto_patent_parser.parsers import parse_xml_v4_file
 
 FIXTURE = Path(__file__).parent / "fixtures" / "ipg_two_grants.xml"
 
 
 def test_public_entry_points_import():
-    assert callable(uspto.read_and_parse_file_from_disk)
-    assert uspto.parse_patent_data_xml_4 is parsers.parse_xml_v4_file.parse_patent_data_xml_4
+    assert callable(uspto_patent_parser.read_and_parse_file_from_disk)
+    assert uspto_patent_parser.parse_patent_data_xml_4 is parse_xml_v4_file.parse_patent_data_xml_4
 
 
 def test_parse_xml_v4_fixture():
-    grants = uspto.read_and_parse_file_from_disk(str(FIXTURE), ["INVT", "ABST", "CLMS"], "xml4")
+    grants = uspto_patent_parser.read_and_parse_file_from_disk(str(FIXTURE), ["INVT", "ABST", "CLMS"], "xml4")
 
     assert len(grants) == 2
     utility, design = grants
