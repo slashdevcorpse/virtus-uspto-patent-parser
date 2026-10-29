@@ -34,6 +34,8 @@ One line for each commit on `virtus` that is not in upstream:
 8. `Give every dependency a lower bound`: floors in `pyproject.toml` that install from wheels on Python 3.9 and
    3.13 (decision D-122 Q3); the numpy floor depends on the Python version.
 9. `Describe the download functions and their pacing in VIRTUS.md`: this file.
+10. `Set a urllib3 floor that imports on Python 3.13`: `urllib3>=1.26.5` in `pyproject.toml`; requests allows older
+    urllib3 releases, which do not import on Python 3.12 and later.
 
 Apart from the moves and the relative imports of patch 5, no patch changes the upstream code.
 
