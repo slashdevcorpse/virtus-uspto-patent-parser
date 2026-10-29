@@ -33,6 +33,7 @@ One line for each commit on `virtus` that is not in upstream:
 7. `Update VIRTUS.md for the uspto_patent_parser package`: this file.
 8. `Give every dependency a lower bound`: floors in `pyproject.toml` that install from wheels on Python 3.9 and
    3.13 (decision D-122 Q3); the numpy floor depends on the Python version.
+9. `Describe the download functions and their pacing in VIRTUS.md`: this file.
 
 Apart from the moves and the relative imports of patch 5, no patch changes the upstream code.
 
@@ -45,11 +46,14 @@ grants = uspto_patent_parser.read_and_parse_file_from_disk("ipg200107.xml", ["IN
 ```
 
 `uspto_patent_parser` has the functions that `from uspto import *` gives upstream (the upstream README). The
-parsers are `uspto_patent_parser.parsers.parse_txt_file`, `parse_xml_v2_file` and `parse_xml_v4_file`. The
-functions that download from `bulkdata.uspto.gov` (`read_and_parse_yearly_data`, `download_yearly_data`,
-`read_and_parse_from_url` and the `read_data_from_url_*` functions) make their own `requests` calls with no pacing
-and no User-Agent. The Virtus ETL does not call them; it downloads with its own paced client and gives the files or
-the XML text to the parse functions.
+parsers are `uspto_patent_parser.parsers.parse_txt_file`, `parse_xml_v2_file` and `parse_xml_v4_file`.
+
+These functions download from `bulkdata.uspto.gov` with their own `requests` calls: `read_and_parse_yearly_data`,
+`download_yearly_data`, `get_patent_files_by_year`, `download_file_to_disk`, `read_and_parse_from_url` and the
+`read_data_from_url_*` functions. They use no shared rate limiter and send no User-Agent of their own. Their only
+pacing is fixed sleeps: the two yearly functions sleep 30 to 39 seconds between files, and
+`read_data_from_url_txt` sleeps 10 seconds between its retries. The Virtus ETL does not call them; it downloads with
+its own paced client and gives the files or the XML text to the parse functions.
 
 ## Release
 
