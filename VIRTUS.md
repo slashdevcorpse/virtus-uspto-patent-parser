@@ -17,31 +17,37 @@ XML v4 2005 and later).
 
 One line for each commit on `virtus` that is not in upstream:
 
-1. `Build a wheel and an sdist with uv build`: `pyproject.toml` with the hatchling backend (upstream has no
-   packaging; `uv_build` cannot package the single-file module `uspto.py`). The wheel holds the upstream layout
-   unchanged: the top-level module `uspto` and the top-level package `parsers`. The sdist leaves out
-   `documentation/` (a 49 MB PDF).
+1. `Build a wheel and an sdist with uv build`: `pyproject.toml` (upstream has no packaging). Patch 5 replaces
+   its backend and layout.
 2. `Add a smoke test that parses a small XML v4 fixture`: `tests/test_smoke.py` and
    `tests/fixtures/ipg_two_grants.xml` (two synthetic grants, hand-written, no publisher data).
 3. `Add the release workflow of the virtus fork`: `.github/workflows/virtus-release.yml`.
 4. `Add VIRTUS.md`: this file.
+5. `Move the code into the uspto_patent_parser package`: `git mv` of `uspto.py` to
+   `uspto_patent_parser/__init__.py` and of `parsers/` to `uspto_patent_parser/parsers/`; the three imports of the
+   parsers become relative (decision D-122: a top-level `parsers` package collides in site-packages). The
+   `uv_build` backend builds the wheel from the package; the sdist keeps `tests/` and leaves out `documentation/`
+   (a 49 MB PDF).
+6. `Add an APS TXT fixture to the smoke test`: `tests/fixtures/aps_two_grants.txt` (two synthetic grants,
+   hand-written).
+7. `Update VIRTUS.md for the uspto_patent_parser package`: this file.
 
-No patch changes the upstream code. The upstream files are where upstream has them, so a sync merge does not
-conflict with a patch.
+Apart from the moves and the relative imports of patch 5, no patch changes the upstream code.
 
 ## Library use
 
 ```python
-import uspto
+import uspto_patent_parser
 
-grants = uspto.read_and_parse_file_from_disk("ipg200107.xml", ["INVT", "ABST", "CLMS"], "xml4")
+grants = uspto_patent_parser.read_and_parse_file_from_disk("ipg200107.xml", ["INVT", "ABST", "CLMS"], "xml4")
 ```
 
-The import names are the upstream ones: `uspto` and `parsers`. The functions that download from
-`bulkdata.uspto.gov` (`read_and_parse_yearly_data`, `download_yearly_data`, `read_and_parse_from_url` and the
-`read_data_from_url_*` functions) make their own `requests` calls with no pacing and no User-Agent. The Virtus ETL
-does not call them; it downloads with its own paced client and gives the files or the XML text to the parse
-functions.
+`uspto_patent_parser` has the functions that `from uspto import *` gives upstream (the upstream README). The
+parsers are `uspto_patent_parser.parsers.parse_txt_file`, `parse_xml_v2_file` and `parse_xml_v4_file`. The
+functions that download from `bulkdata.uspto.gov` (`read_and_parse_yearly_data`, `download_yearly_data`,
+`read_and_parse_from_url` and the `read_data_from_url_*` functions) make their own `requests` calls with no pacing
+and no User-Agent. The Virtus ETL does not call them; it downloads with its own paced client and gives the files or
+the XML text to the parse functions.
 
 ## Release
 
@@ -57,9 +63,10 @@ functions.
 
 1. Fast-forward `master` to upstream `master`:
    `git fetch upstream && git push origin upstream/master:master`.
-2. Merge `master` into `virtus` (never rebase `virtus`). Solve the conflicts in the patch commits.
-3. If upstream added a module or a package, add it to `only-include` in `pyproject.toml`. If upstream added a
-   dependency, add it to `dependencies`.
+2. Merge `master` into `virtus` (never rebase `virtus`). Git follows the renames of patch 5 for changes to
+   existing files. Move a new upstream file into `uspto_patent_parser/` with `git mv` and make its imports of
+   `parsers` relative.
+3. If upstream added a dependency, add it to `dependencies` in `pyproject.toml`.
 4. Run the smoke test against the built wheel, as the release workflow does:
    `uv build --out-dir dist`, then in `tests/`:
    `uv run --isolated --no-project --with ../dist/<wheel> --with pytest pytest --import-mode=importlib .`
