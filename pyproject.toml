@@ -1,0 +1,34 @@
+[project]
+name = "virtus-uspto-patent-parser"
+# Upstream has no version; see VIRTUS.md "Release".
+version = "0.0.0+virtus.1"
+description = "Read and parse USPTO patent grant full text (APS TXT, XML v2, XML v4). Virtus fork of TamerKhraisha/uspto-patent-data-parser."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+dependencies = [
+    "beautifulsoup4>=4.6.3",
+    "numpy",
+    "pandas",
+    "requests",
+]
+
+[project.urls]
+Upstream = "https://github.com/TamerKhraisha/uspto-patent-data-parser"
+Source = "https://github.com/slashdevcorpse/virtus-uspto-patent-parser"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+# hatchling, not uv_build: uv_build cannot package the single-file module `uspto.py`.
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# Upstream layout: the top-level module `uspto` and the top-level package `parsers`.
+only-include = ["uspto.py", "parsers"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/documentation", "/.github"]
