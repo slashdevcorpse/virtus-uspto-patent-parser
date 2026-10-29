@@ -1,0 +1,31 @@
+HHHHHT APS1
+PATN
+WKU  039999911
+SRC  5
+APN  5000001
+APT  1
+ART  242
+APD  19750102
+TTL  Synthetic widget for a parser smoke test
+ISD  19760106
+NCL  2
+INVT
+NAM  Doe; Jane
+CTY  Alexandria
+STA  VA
+ABST
+PAL  A synthetic widget that has a first part and a second part.
+CLMS
+NUM  1.
+PAR  A widget comprising a first part and a second part.
+NUM  2.
+PAR  The widget of claim 1, wherein the first part is round.
+PATN
+WKU  039999929
+SRC  5
+APN  5000002
+APT  1
+APD  19750103
+TTL  Second synthetic widget
+ISD  19760106
+NCL  1
